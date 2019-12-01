@@ -113,3 +113,42 @@ $ afl-fuzz -i testcases/archives/common/gzip/ -o test_gzip -- ./gzip_ins -d -c
 
 Note that there are the helper scripts afl-fuzz-dyninst.sh and afl-dyninst.sh for you which set the
 required environment variables for you.
+
+
+=================================
+Below config specific for UofT ECE 1776, 2019:
+
+# Install spack:
+   $ cd /home/ubuntu
+   $ sudo mkdir spack
+   $cd spack
+   $ git clone https://github.com/spack/spack.git
+   
+# Install Dyninst from spack
+   $ cd spack/bin
+   $ ./spack install dyninst
+
+# Configure dyninst
+   $ export LD_LIBRARY_PATH=/usr/local/lib:/home/ubuntu/spack/opt/spack/linux-ubuntu16.04-x86_64/gcc-5.4.0/dyninst-10.1.0-unvujmg7dbajzysqjue
+   djqbvgz2izc4u/lib/
+
+# Install $ config libiberty
+   $ sudo apt-get install libiberty-all-dev
+   $ dpkg -L libiberty-dev | grep -F iberty.a
+  
+# Install afl-dyninst
+   $ cd ~
+   $ sudo mkdir afl-dyninst
+   $ git clone https://github.com/fredpan/afl-dyninst.git
+   $ vim Makefile
+   Change DYNINST_ROOT and AFL_ROOT of the Makefile (the file name could be a little bit different):
+   $ Makefile = /home/ubuntu/spack/opt/spack/linux-ubuntu16.04-x86_64/gcc-5.4.0/dyninst-10.1.0-unvujmg7dbajzysqjuedjqbvgz2izc4u
+   $ AFL_ROOT = /home/ubuntu/shellphish-afl/shellphish_afl/../bin/afl-unix
+   $ make
+   $ make install
+
+# Config the afl-dyninst
+   $ export DYNINSTAPI_RT_LIB=/home/ubuntu/spack/opt/spack/linux-ubuntu16.04-x86_64/gcc-5.4.0/dyninst-10.1.0-unvujmg7dbajzysqjuedjqbvgz2izc4u/lib/libdyninstAPI_RT.so
+  
+# Build the AFL Binaries (Problem here: Assertion error and/or copy_states not enabled):
+   ./afl-dyninst -i /home/ubuntu/fuzzer/objdump -o ./fredpan -d
